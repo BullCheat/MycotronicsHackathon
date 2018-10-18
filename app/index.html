@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mycotronics control interface</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-slider.css">
+    <style>
+        .slider-selection {
+            background: #afafaf;
+        }
+
+        .slider.slider-horizontal .tooltip.tooltip-main.in,
+        .slider.slider-vertical .tooltip.tooltip-main.in {
+            opacity: 1 !important;
+        }
+
+        .slider.slider-horizontal {
+            width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container-fluid" style="background-color: #fff0e0">
+    <div class="row" style="padding-top: 10px">
+        <div class="col-sm-3">
+            <div>
+                <script></script>
+                <h2 style="text-align: center">Sensors</h2>
+                <table class="table table-borderless">
+                    <tbody>
+                    <tr class="table-danger">
+                        <td>Temperature</td>
+                        <td id="temperature">...</td>
+                    </tr>
+                    <tr class="table-success">
+                        <td>Humidity</td>
+                        <td id="humidity">...</td>
+                    </tr>
+                    <tr class="table-secondary">
+                        <td>CO<sub>2</sub></td>
+                        <td id="CO2">...</td>
+                    </tr>
+                    <tr class="table-secondary">
+                        <td>O<sub>2</sub></td>
+                        <td id="O2">...</td>
+                    </tr>
+                    <tr class="table-secondary">
+                        <td>N<sub>2</sub></td>
+                        <td id="N2">...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <h2 style="text-align: center">Timeline</h2>
+                <img src="res/raspi.jpg" style="width: 100%; margin-bottom: 10px"/>
+                <img src="res/raspi.jpg" style="width: 100%; margin-bottom: 10px"/>
+                <img src="res/raspi.jpg" style="width: 100%; margin-bottom: 10px"/>
+                <img src="res/raspi.jpg" style="width: 100%; margin-bottom: 10px"/>
+                <img src="res/raspi.jpg" style="width: 100%; margin-bottom: 10px"/>
+            </div>
+        </div>
+        <div class="col-sm-6 align-content-center">
+            <h2 style="text-align: center">Current</h2>
+            <img id="currentPicture" src="pictures/latest.jpg" style="width: 100%; margin-bottom: 10px"/>
+            <p>
+                <button id="currentPictureRefresh" type="button" class="btn btn-primary btn-block">Refresh</button>
+                <button id="currentPictureSave" type="button" class="btn btn-secondary btn-block">Save to timeline
+                </button>
+            </p>
+        </div>
+        <div class="col-sm-3">
+            <h2 style="text-align: center">Controls</h2>
+            <p>
+                <label for="temperatureSlider">Temperature</label><br>
+                <input id="temperatureSlider" class="ex5" type="text" data-slider-min="0" data-slider-max="50"
+                       data-slider-step="0.1" data-slider-value="20"/><br>
+            </p>
+            <p>
+                <label for="humiditySlider">Humidity</label><br>
+                <input id="humiditySlider" class="ex5" type="text" data-slider-min="0" data-slider-max="100"
+                       data-slider-step="1" data-slider-value="60"/><br>
+            </p>
+            <p>
+                <label for="CO2Slider">CO<sub>2</sub></label><br>
+                <input id="CO2Slider" class="ex5" type="text" data-slider-min="0" data-slider-max="1000"
+                       data-slider-step="1" data-slider-value="410"/><br>
+            </p>
+            <p>
+                <label for="O2Slider">O<sub>2</sub></label><br>
+                <input id="O2Slider" class="ex5" type="text" data-slider-min="0" data-slider-max="100"
+                       data-slider-step="0.05" data-slider-value="20.95"/><br>
+            </p>
+            <p>
+                <label for="N2Slider">N<sub>2</sub></label><br>
+                <input id="N2Slider" class="ex5" type="text" data-slider-min="0" data-slider-max="100"
+                       data-slider-step="0.05" data-slider-value="78.1"/><br>
+            </p>
+        </div>
+    </div>
+</div> <!-- CO2 O2 N2 OTHER LIGHT LIGHTGRAPH
+CSV EXPORT ~every 10mn with image
+3d scan -->
+<script src="js/jquery-3.3.1.js"></script>
+<script src="js/bootstrap.bundle.js"></script>
+<script src="js/bootstrap-slider.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    function adderFixed(a, p) {
+        return {formatter: (b) => b.toFixed(p) + a}
+    }
+    $("#temperatureSlider").slider(adderFixed('°C', 1)).on('change', (event) => {
+        socket.emit("setControls", {temperature: event.value.newValue})
+    });
+    $("#humiditySlider").slider(adderFixed('%', 0));
+    $("#CO2Slider").slider(adderFixed('ppm', 0));
+    $("#O2Slider").slider(adderFixed('%', 2));
+    $("#N2Slider").slider(adderFixed('%', 2));
+    $("#currentPictureRefresh").click(() => {
+        socket.emit('updateCurrentPicture')
+    });
+    $("#currentPictureSave").click(() => {
+        socket.emit('saveCurrentPicture')
+    })
+</script>
+<script>
+    var socket = io();
+    socket.on('sensors', (data) => {
+        $("#temperature").text(data.temperature + "°C")
+    });
+    socket.on('refreshPicture', () => {
+        $("#currentPicture").attr("src", "pictures/latest.jpg?" + Date.now());
+    })
+</script>
+</body>
+</html>
