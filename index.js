@@ -16,7 +16,7 @@ io.on('connection', (socket) => {
     updateControls(socket);
     updateTimeline(socket);
     updateCurrentPicture(socket);
-    socket.on('updateSensors', () => updateSensors(socket));
+    socket.on('udateSensors', () => updateSensors(socket));
     socket.on('updateControls', () => updateControls(socket));
     socket.on('updateTimeline', () => updateTimeline(socket));
     socket.on('updateCurrentPicture', () => updateCurrentPicture(socket));

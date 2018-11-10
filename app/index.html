@@ -3,136 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <title>Mycotronics control interface</title>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/bootstrap-slider.css">
-    <style>
-        .slider-selection {
-            background: #afafaf;
-        }
-
-        .slider.slider-horizontal .tooltip.tooltip-main.in,
-        .slider.slider-vertical .tooltip.tooltip-main.in {
-            opacity: 1 !important;
-        }
-
-        .slider.slider-horizontal {
-            width: 100%;
-        }
-
-    </style>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.2.3/css/bootstrap-slider.min.css">
+    <link rel="stylesheet" href="css/app.css">
 </head>
-<body>
-<div class="container-fluid" style="background-color: #fff0e0">
+<body style="background-color: #fff0e0">
+<div class="container-fluid">
     <div class="row" style="padding-top: 10px">
-        <div class="col-sm-3">
+        <div class="col-lg-3">
             <div>
-                <script></script>
                 <h2 style="text-align: center">Sensors</h2>
                 <table class="table table-borderless">
                     <tbody>
-                    <tr class="table-danger">
+                    <tr>
                         <td>Temperature</td>
                         <td id="temperature">...</td>
                     </tr>
-                    <tr class="table-success">
+                    <tr>
                         <td>Humidity</td>
                         <td id="humidity">...</td>
-                    </tr>
-                    <tr class="table-secondary">
-                        <td>CO<sub>2</sub></td>
-                        <td id="CO2">...</td>
-                    </tr>
-                    <tr class="table-secondary">
-                        <td>O<sub>2</sub></td>
-                        <td id="O2">...</td>
-                    </tr>
-                    <tr class="table-secondary">
-                        <td>N<sub>2</sub></td>
-                        <td id="N2">...</td>
                     </tr>
                     </tbody>
                 </table>
             </div>
             <div>
-                <h2 style="text-align: center">Timeline</h2>
-                <img src="res/raspi.jpg" style="width: 100%; margin-bottom: 10px"/>
-                <img src="res/raspi.jpg" style="width: 100%; margin-bottom: 10px"/>
-                <img src="res/raspi.jpg" style="width: 100%; margin-bottom: 10px"/>
-                <img src="res/raspi.jpg" style="width: 100%; margin-bottom: 10px"/>
-                <img src="res/raspi.jpg" style="width: 100%; margin-bottom: 10px"/>
+                <h2 style="text-align: center">Controls</h2>
+                <p>
+                    <label for="temperatureSlider">Target Temperature</label><br>
+                    <input id="temperatureSlider" class="ex5" type="text" data-slider-min="0" data-slider-max="60"
+                           data-slider-step="1"/><br>
+                </p>
+                <p>
+                    <label for="cutoffTemperatureSlider">Cutoff Temperature</label><br>
+                    <input id="cutoffTemperatureSlider" class="ex5" type="text" data-slider-min="0" data-slider-max="60"
+                           data-slider-step="1"/><br>
+                </p>
+                <p>
+                    <label for="intervalSlider">Interval</label><br>
+                    <input id="intervalSlider" class="ex5" type="text" data-slider-min="10" data-slider-max="1800"
+                           data-slider-step="10"/><br>
+                </p>
+            </div>
+            <div>
+                <h2 style="text-align: center">Next/Prev</h2>
+                <p>
+                    <button style="width: 100%;" id="prevButton" type="button" class="btn btn-secondary">Previous
+                    </button>
+                </p>
+                <p>
+                <form class="form-inline" action="javascript:jumpto()">
+                    <input style="margin-right: 10px" id="timeInput" type="datetime-local" class="form-control"
+                           title="Select date" step="1"/>
+                    <button type="submit" class="btn btn-primary">Go</button>
+                </form>
+                </p>
+                <p>
+                    <button style="width: 100%;" id="nextButton" type="button" class="btn btn-secondary">Next
+                    </button>
+                </p>
             </div>
         </div>
-        <div class="col-sm-6 align-content-center">
-            <h2 style="text-align: center">Current</h2>
-            <img id="currentPicture" src="pictures/latest.jpg" style="width: 100%; margin-bottom: 10px"/>
-            <p>
-                <button id="currentPictureRefresh" type="button" class="btn btn-primary btn-block">Refresh</button>
-                <button id="currentPictureSave" type="button" class="btn btn-secondary btn-block">Save to timeline
-                </button>
-            </p>
+        <div class="col-lg-9">
+            <h2 style="text-align: center">Pictures</h2>
+            <div class="row justify-content-md-center" id="pictures"></div>
         </div>
-        <div class="col-sm-3">
-            <h2 style="text-align: center">Controls</h2>
-            <p>
-                <label for="temperatureSlider">Temperature</label><br>
-                <input id="temperatureSlider" class="ex5" type="text" data-slider-min="0" data-slider-max="50"
-                       data-slider-step="0.1" data-slider-value="20"/><br>
-            </p>
-            <p>
-                <label for="humiditySlider">Humidity</label><br>
-                <input id="humiditySlider" class="ex5" type="text" data-slider-min="0" data-slider-max="100"
-                       data-slider-step="1" data-slider-value="60"/><br>
-            </p>
-            <p>
-                <label for="CO2Slider">CO<sub>2</sub></label><br>
-                <input id="CO2Slider" class="ex5" type="text" data-slider-min="0" data-slider-max="1000"
-                       data-slider-step="1" data-slider-value="410"/><br>
-            </p>
-            <p>
-                <label for="O2Slider">O<sub>2</sub></label><br>
-                <input id="O2Slider" class="ex5" type="text" data-slider-min="0" data-slider-max="100"
-                       data-slider-step="0.05" data-slider-value="20.95"/><br>
-            </p>
-            <p>
-                <label for="N2Slider">N<sub>2</sub></label><br>
-                <input id="N2Slider" class="ex5" type="text" data-slider-min="0" data-slider-max="100"
-                       data-slider-step="0.05" data-slider-value="78.1"/><br>
-            </p>
+
+        <div class="col-12">
+            <h2 style="text-align: center">Graph</h2>
+            <canvas id="chart"></canvas>
         </div>
     </div>
 </div> <!-- CO2 O2 N2 OTHER LIGHT LIGHTGRAPH
 CSV EXPORT ~every 10mn with image
 3d scan -->
-<script src="js/jquery-3.3.1.js"></script>
-<script src="js/bootstrap.bundle.js"></script>
-<script src="js/bootstrap-slider.js"></script>
-<script src="/socket.io/socket.io.js"></script>
-<script>
-    function adderFixed(a, p) {
-        return {formatter: (b) => b.toFixed(p) + a}
-    }
-    $("#temperatureSlider").slider(adderFixed('°C', 1)).on('change', (event) => {
-        socket.emit("setControls", {temperature: event.value.newValue})
-    });
-    $("#humiditySlider").slider(adderFixed('%', 0));
-    $("#CO2Slider").slider(adderFixed('ppm', 0));
-    $("#O2Slider").slider(adderFixed('%', 2));
-    $("#N2Slider").slider(adderFixed('%', 2));
-    $("#currentPictureRefresh").click(() => {
-        socket.emit('updateCurrentPicture')
-    });
-    $("#currentPictureSave").click(() => {
-        socket.emit('saveCurrentPicture')
-    })
-</script>
-<script>
-    var socket = io();
-    socket.on('sensors', (data) => {
-        $("#temperature").text(data.temperature + "°C")
-    });
-    socket.on('refreshPicture', () => {
-        $("#currentPicture").attr("src", "pictures/latest.jpg?" + Date.now());
-    })
-</script>
+<script
+        src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+        crossorigin="anonymous"></script>
+<script
+        src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.bundle.min.js"
+        integrity="sha384-pjaaA8dDz/5BgdFUPX6M/9SUZv4d12SUPF0axWc+VRZkx5xU3daN+lYb49+Ax+Tl"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.2.3/bootstrap-slider.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.5.7/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.5.7/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.5.7/firebase-storage.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.5.7/firebase-auth.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
+<!-- todo download button -->
